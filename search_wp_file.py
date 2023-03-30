@@ -19,12 +19,8 @@ wp = mavwp.MAVWPLoader()
 # Once connected, use 'the_connection' to get and send messages
 msg = the_connection.recv_match(type="TERRAIN_REPORT",blockings = True)
 print(msg)
-lat_pattern = re.compile(r'lat:\s*([-\d.]+)')
-lon_pattern = re.compile(r'lon:\s*([-\d.]+)')
-lat_match = lat_pattern.search(msg)
-lon_match = lon_pattern.search(msg)
-curr_lat = np.uint32(lat_match)
-curr_lon = np.uint32(lon_match)
+curr_lat = (msg.lat)/1e7
+curr_lon = (msg.lon)/1e7
 home_location = (curr_lat,curr_lon)
 near_index = 0
 
