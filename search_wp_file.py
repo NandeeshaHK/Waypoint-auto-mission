@@ -14,6 +14,7 @@ the_connection = mavutil.mavlink_connection('udpin:localhost:14551')
 #   This sets the system and component ID of remote system for the link
 the_connection.wait_heartbeat()
 print("Heartbeat from system (system %u component %u)" % (the_connection.target_system, the_connection.target_component))
+#waypoint loader object
 wp = mavwp.MAVWPLoader()
 
 # Once connected, use 'the_connection' to get and send messages
@@ -26,10 +27,26 @@ near_index = 0
 
 
 #declare waypoints path folder
-folder_path = "/pymavlink/"
+folder_path = "/waypoints/"
 #necessary list declaration
 wpf_dis_list = []
 wp_att_list = []
+file_name_list = os.listdir(folder_path)
+
+#to avoid un_necessary files from waypoints folder use delete_nonWP
+def delete_nonWP(fld_path, list):
+     for file in list:
+        file_path = os.path.join(fld_path, file)
+        if os.path.isfile(file_path):
+            with open(file) as f:
+                for i, line in enumerate(f):
+                    if i == 0:
+                        if not line.startswith('QGC WPL 110'):
+                             os.remove(file_path)
+                             print(i+" deleted successfully.")
+
+delete_nonWP(folder_path, file_name_list)
+#to refresh the folder list
 file_name_list = os.listdir(folder_path)
 
 #code to extract nearest waypoint files
@@ -38,24 +55,25 @@ for file_name in file_name_list:
     if os.path.isfile(file_path):
         with open(file_name) as f:
             for i, line in enumerate(f):
-                if i == 0:
-                    if not line.startswith('QGC WPL 110'):
-                        raise Exception('File is not supported WP version')
-                elif i ==1:
+                if i ==1:
                     linearray = line.split('\t')
-                    ln_x = np.uint32(linearray[8])
-                    ln_y = np.uint32(linearray[9])
+                    ln_x = np.float32(linearray[8])
+                    ln_y = np.float32(linearray[9])
                     ln_z = float(linearray[10])
                     wpf_dis_list.append(math.sqrt((ln_x-curr_lat)**2+(ln_y-curr_lon)**2))
                     break
     print(file_path)
 min_dis = min(wpf_dis_list)
-for i,j in wpf_dis_list:
+#this is to find the waypoint file index
+for i,j in enumerate(wpf_dis_list):
      if min_dis==j:
           near_index = i
           break
+    
+#Extracted waypoint file
 Final_wpf = file_name_list[near_index]
-
+print(Final_wpf)
+    
 #a command function to set home location
 def cmd_set_home(home_location, altitude):
     print('--- ', the_connection.target_system, ',', the_connection.target_component)
