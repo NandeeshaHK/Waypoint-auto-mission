@@ -17,7 +17,7 @@ print("Heartbeat from system (system %u component %u)" % (the_connection.target_
 wp = mavwp.MAVWPLoader()
 
 # Once connected, use 'the_connection' to get and send messages
-msg = the_connection.recv_match(type="TERRAIN_REPORT",blockings = True)
+msg = the_connection.recv_match(type="GLOBAL_POSITION_INT",blockings = True)
 print(msg)
 curr_lat = (msg.lat)/1e7
 curr_lon = (msg.lon)/1e7
