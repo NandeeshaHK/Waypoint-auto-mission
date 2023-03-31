@@ -31,8 +31,14 @@ folder_path = "/waypoints/"
 #necessary list declaration
 wpf_dis_list = []
 wp_att_list = []
-file_name_list = os.listdir(folder_path)
+#file_name_list = os.listdir(folder_path)
+# To select only .waypoint files from the folder
+file_name_list = []
+for filename in os.listdir(folder_path):
+    if filename.endswith(".waypoints"):
+        file_name_list.append(os.path.join(folder_path, filename))
 
+print(file_name_list)
 #to avoid un_necessary files from waypoints folder use delete_nonWP
 def delete_nonWP(fld_path, list):
      for file in list:
@@ -45,7 +51,7 @@ def delete_nonWP(fld_path, list):
                              os.remove(file_path)
                              print(i+" deleted successfully.")
 
-delete_nonWP(folder_path, file_name_list)
+#delete_nonWP(folder_path, file_name_list)
 #to refresh the folder list
 file_name_list = os.listdir(folder_path)
 
